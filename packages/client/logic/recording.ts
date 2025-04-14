@@ -12,12 +12,17 @@ type MimeType = Defined<RecorderOptions['mimeType']>
 export const recordingName = ref('')
 export const recordCamera = ref(true)
 export const mimeType = useLocalStorage<MimeType>('slidev-record-mimetype', 'video/webm')
+export const frameRate = useLocalStorage<number>('slidev-record-frame-rate', 15)
+export const bitsPerSecond = useLocalStorage<number>('slidev-record-bits-per-second', convertMbpsToBps(8))
 
 export const mimeExtMap: Record<string, string> = {
   'video/webm': 'webm',
   'video/webm;codecs=h264': 'mp4',
   'video/x-matroska;codecs=avc1': 'mkv',
 }
+export const frameRateOptions = [15, 30, 60]
+// Bitrate options in Mbps
+export const bitrateOptions = [8, 16, 35, 56]
 
 export function getFilename(media?: string, mimeType?: string) {
   const d = new Date()
@@ -38,6 +43,10 @@ function getSupportedMimeTypes() {
 }
 
 export const supportedMimeTypes = getSupportedMimeTypes()
+
+export function convertMbpsToBps(mbps: number) {
+  return 4 * 256 * mbps * 1024
+}
 
 export const {
   devices,
@@ -144,7 +153,7 @@ export function useRecording() {
     streamCapture.value = await navigator.mediaDevices.getDisplayMedia({
       video: {
         // aspectRatio: 1.6,
-        frameRate: 15,
+        frameRate: customConfig?.frameRate ?? 15,
         width: 3840,
         height: 2160,
         // @ts-expect-error missing types

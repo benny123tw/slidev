@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core'
 import { nextTick } from 'vue'
-import { getFilename, mimeType, recordCamera, recorder, recordingName } from '../logic/recording'
+import { bitrateOptions, bitsPerSecond, convertMbpsToBps, frameRate, frameRateOptions, getFilename, mimeType, recordCamera, recorder, recordingName } from '../logic/recording'
 import DevicesSelectors from './DevicesSelectors.vue'
 import Modal from './Modal.vue'
 
@@ -27,6 +27,8 @@ async function start() {
   await nextTick()
   startRecording({
     mimeType: mimeType.value,
+    bitsPerSecond: bitsPerSecond.value,
+    frameRate: frameRate.value,
   })
 }
 </script>
@@ -58,6 +60,38 @@ async function start() {
             type="checkbox"
           >
           <label for="record-camera" @click="recordCamera = !recordCamera">Record camera separately</label>
+        </div>
+
+        <div class="form-text">
+          <label for="title">Frame Rate</label>
+          <select
+            v-model="frameRate"
+            class="bg-transparent text-current"
+            name="title"
+          >
+            <option v-for="item in frameRateOptions" :key="item" :value="item">
+              {{ item }} fps
+            </option>
+          </select>
+          <div class="text-xs w-full opacity-50 py-2">
+            <div>Higher frame rates result in smoother videos but <br>may increase file size and processing requirements.</div>
+          </div>
+        </div>
+
+        <div class="form-text">
+          <label for="title">Bitrate</label>
+          <select
+            v-model="bitsPerSecond"
+            class="bg-transparent text-current"
+            name="title"
+          >
+            <option v-for="item in bitrateOptions" :key="item" :value="convertMbpsToBps(item)">
+              {{ item }} Mbps
+            </option>
+          </select>
+          <div class="text-xs w-full opacity-50 py-2">
+            <div>Higher bitrate results in better quality but larger file size.</div>
+          </div>
         </div>
 
         <div class="text-xs w-full opacity-50">
