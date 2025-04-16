@@ -9,11 +9,22 @@ import { currentCamera, currentMic } from '../state'
 type Defined<T> = T extends undefined ? never : T
 type MimeType = Defined<RecorderOptions['mimeType']>
 
+interface CompressionOption {
+  display: string
+  frameRate: number
+  bitrate: number
+}
+
 export const recordingName = ref('')
 export const recordCamera = ref(true)
 export const mimeType = useLocalStorage<MimeType>('slidev-record-mimetype', 'video/webm')
 export const frameRate = useLocalStorage<number>('slidev-record-frame-rate', 15)
 export const bitsPerSecond = useLocalStorage<number>('slidev-record-bits-per-second', convertMbpsToBps(8))
+export const compressionOption = useLocalStorage<CompressionOption>('slidev-record-compression', {
+  display: 'Streaming (60 fps, 54 Mbps)',
+  frameRate: 60,
+  bitrate: 54,
+})
 
 export const mimeExtMap: Record<string, string> = {
   'video/webm': 'webm',
@@ -23,6 +34,33 @@ export const mimeExtMap: Record<string, string> = {
 export const frameRateOptions = [15, 30, 60]
 // Bitrate options in Mbps
 export const bitrateOptions = [8, 16, 35, 56]
+export const compressionOptions: CompressionOption[] = [
+  {
+    display: 'Streaming (60 fps, 54 Mbps)',
+    frameRate: 60,
+    bitrate: 54,
+  },
+  {
+    display: 'Social Media (30 fps, 12 Mbps)',
+    frameRate: 30,
+    bitrate: 12,
+  },
+  {
+    display: 'High Quality (24 fps, 100 Mbps)',
+    frameRate: 24,
+    bitrate: 100,
+  },
+  {
+    display: 'Standard Quality (30 fps, 35 Mbps)',
+    frameRate: 30,
+    bitrate: 35,
+  },
+  {
+    display: 'Custom settings',
+    frameRate: 0,
+    bitrate: 0,
+  },
+]
 
 export function getFilename(media?: string, mimeType?: string) {
   const d = new Date()
